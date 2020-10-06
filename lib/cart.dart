@@ -5,13 +5,22 @@ class Cart {
   String name;
   List<Item> items;
 
-  Cart(String name) {
+  Cart(int id, String name, List<Item> items) {
+    this.id = id;
     this.name = name;
-    this.items = [];
+    this.items = items;
   }
 
-  static build(String name) {
-    return new Cart(name);
+  static build(int id, String name) {
+    return new Cart(id, name, []);
+  }
+
+  String getName() {
+    return this.name;
+  }
+
+  setItems(List<Item> items) {
+    this.items = items;
   }
 
   addItem(Item item) {
@@ -40,6 +49,11 @@ class Cart {
 //      : name = json['name'],
 //        age = json['age'],
 //        location = json['location'];
+
+  static Cart fromJson(Map<String, dynamic> json) {
+    Cart cart = Cart.build(json['id'], json['name']);
+
+  }
 
   getAllItems() {
     return items;
