@@ -1,39 +1,39 @@
 import 'dart:async';
 
 import 'package:examone/cart_event.dart';
-import 'package:examone/cart_items_screen.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 import 'cart.dart';
-import 'cart_service.dart';
 import 'dialog_service.dart';
+import 'items_screen.dart';
 
 class CartViewService {
-
-  static Widget getListView(List<Cart> carts, StreamController<CartEvent> streamController) {
-
-    var listView2  = ListView.builder(
+  static Widget getListView(
+      List<Cart> carts, StreamController<CartEvent> streamController) {
+    var listView2 = ListView.builder(
       itemCount: carts.length,
       itemBuilder: (context, index) {
         Cart cart = carts[index];
         return ListTile(
-            leading: Icon(Icons.shopping_cart),
-            title: Text(cart.getName()),
-            trailing: _getTrailingRowButtons(cart, context, streamController),
-            onTap: () => _navigateToCartItems(cart, context),
+          leading: Icon(Icons.shopping_cart),
+          title: Text(cart.getName()),
+          trailing: _getTrailingRowButtons(cart, context, streamController),
+          onTap: () => _navigateToCartItems(cart, context),
         );
       },
     );
     return listView2;
   }
-  
+
   static _navigateToCartItems(Cart cart, BuildContext context) {
     debugPrint('YOUR CART ${cart.getName()} - ${cart.getId()}');
-    Navigator.of(context).push(MaterialPageRoute(builder: (ctx) => ItemsScreen(cart: cart)));
+    Navigator.of(context)
+        .push(MaterialPageRoute(builder: (ctx) => ItemsScreen(cart: cart)));
   }
-  
-  static Widget _getTrailingRowButtons(Cart cart, BuildContext context, StreamController<CartEvent> streamController) {
+
+  static Widget _getTrailingRowButtons(Cart cart, BuildContext context,
+      StreamController<CartEvent> streamController) {
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: <Widget>[
@@ -42,9 +42,8 @@ class CartViewService {
       ],
     );
   }
-  
-  static Widget _getRemoveButton(Cart cart, StreamController streamController) {
 
+  static Widget _getRemoveButton(Cart cart, StreamController streamController) {
     return IconButton(
         icon: Icon(Icons.delete),
         onPressed: () {
@@ -52,16 +51,18 @@ class CartViewService {
         });
   }
 
-  static Widget _getEditNameButton(Cart cart, BuildContext context, StreamController streamController) {
-
+  static Widget _getEditNameButton(
+      Cart cart, BuildContext context, StreamController streamController) {
     return IconButton(
-          icon: Icon(Icons.edit),
-          onPressed: () => _showUpdateNameDialog(cart, context, streamController)
-      );
+        icon: Icon(Icons.edit),
+        onPressed: () =>
+            _showUpdateNameDialog(cart, context, streamController));
   }
 
-  static _showUpdateNameDialog(Cart cart, BuildContext context, StreamController streamController) {
+  static _showUpdateNameDialog(
+      Cart cart, BuildContext context, StreamController streamController) {
     DialogService.createAlertDialog(context, 'Your New Cart Name', 'Update')
-        .then((value) => streamController.add(CartEvent.buildClickedEditName(Cart.build(cart.getId(), value))));
+        .then((value) => streamController.add(
+            CartEvent.buildClickedEditName(Cart.build(cart.getId(), value))));
   }
 }

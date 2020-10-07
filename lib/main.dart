@@ -1,6 +1,5 @@
 
 import 'package:examone/cart_service.dart';
-import 'package:examone/inherited_injection.dart';
 import 'package:examone/user_preferences.dart';
 import 'package:flutter/material.dart';
 

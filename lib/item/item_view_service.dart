@@ -21,7 +21,7 @@ class ItemViewService {
           leading: Icon(Icons.shopping_cart),
           title: Text(item.getName()),
           trailing: _getTrailingRowButtons(cart, item, context, streamController),
-          onTap: () => debugPrint('ITEM DETAILS'),
+          onTap: () => debugPrint('SHOW ITEM DETAILS'),
         );
       },
     );

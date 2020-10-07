@@ -32,7 +32,6 @@ class _HomeScreenState extends State<HomeScreen> {
 
     streamController = StreamController.broadcast();
     cartService = UserPreferences().cartService;
-    debugPrint(cartService.preferences.toString());
     carts = cartService.getAllCarts();
 
     streamController.stream.listen((event) {
