@@ -17,12 +17,9 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return InheritedInjection(
-      carts: UserPreferences().cartService.getAllCarts(),
-      child: MaterialApp(
+    return MaterialApp(
         title: 'Basic List View',
-        home: HomeScreen(title: 'NAKA IGIT',)
-      ),
-    );
+        home: HomeScreen(title: 'Shopping Cart List',)
+      );
   }
 }

@@ -8,7 +8,10 @@ class DialogService {
     return showDialog(context: context, builder: (context) {
       return AlertDialog(
           title: Text(dialogText),
-          content: TextField(controller: customController),
+          content: TextField(
+              textCapitalization: TextCapitalization.sentences,
+              controller: customController
+          ),
           actions: <Widget>[
             MaterialButton(
               onPressed: () {

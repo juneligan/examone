@@ -27,8 +27,21 @@ class CartService {
     return Cart.build(id, name);
   }
 
-  removeItemFrom(Cart cart, Item item) {
+  throwAwayTheItemToThePersonNearYou(Cart cart, Item item) {
+    String itemString = jsonEncode(item.toJson());
 
+    List<String> stringItems = _getAllStringItemsFrom(cart);
+    stringItems.add(itemString);
+
+    stringItems.removeWhere((element) => element == itemString);
+
+    String cartItemsKey = _getCartItemsKey(cart);
+    _sharedPreferences.setStringList(cartItemsKey, stringItems);
+  }
+
+  throwItAllAwayToTheGuard(Cart cart) {
+    String cartItemsKey = _getCartItemsKey(cart);
+    _sharedPreferences.remove(cartItemsKey);
   }
 
   List<Item> getAllItemsFrom(Cart cart) {
@@ -42,7 +55,7 @@ class CartService {
     return items;
   }
 
-  saveItemTo(Cart cart, Item item) {
+  putTheItemToYour(Cart cart, Item item) {
     String itemString = jsonEncode(item.toJson());
 
     List<String> stringItems = _getAllStringItemsFrom(cart);
@@ -51,6 +64,19 @@ class CartService {
     String cartItemsKey = _getCartItemsKey(cart);
     _sharedPreferences.setStringList(cartItemsKey, stringItems);
     _itemService.incrementCartSequenceId();
+  }
+
+  updateItemName(Cart cart, Item item, Item oldItem) {
+    String itemString = jsonEncode(item.toJson());
+    String oldItemString = jsonEncode(oldItem.toJson());
+
+    List<String> stringItems = _getAllStringItemsFrom(cart);
+    int index = stringItems.indexWhere((e) => e == oldItemString);
+    stringItems.removeWhere((e) => e == oldItemString);
+    stringItems.insert(index, itemString);
+
+    String cartItemsKey = _getCartItemsKey(cart);
+    _sharedPreferences.setStringList(cartItemsKey, stringItems);
   }
 
   String _getCartItemsKey(Cart cart) {
@@ -66,15 +92,25 @@ class CartService {
   }
 
   deleteCart(Cart cart) {
-    debugPrint("DELETING "+cart.getName()+ "...");
-    String cartKey = CART_KEY_PREFIX + cart.getId().toString();
+    String cartKey = _buildCartKey(cart);
     _sharedPreferences.remove(cartKey);
+    throwItAllAwayToTheGuard(cart);
+  }
+
+  updateCartName(Cart cart) {
+    String cartKey = _buildCartKey(cart);
+    String jsonString = jsonEncode(cart.toJson());
+    _sharedPreferences.setString(cartKey, jsonString);
+  }
+
+  String _buildCartKey(Cart cart) {
+    return CART_KEY_PREFIX + cart.getId().toString();
   }
 
   saveCart(Cart cart) {
     String jsonString = jsonEncode(cart.toJson());
 
-    String cartKey = CART_KEY_PREFIX + cart.getId().toString();
+    String cartKey = _buildCartKey(cart);
     _sharedPreferences.setString(cartKey, jsonString);
     _incrementCartSequenceId();
   }

@@ -22,9 +22,6 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  final ADD_CART_DIALOG_TEXT = 'Your Cart Name';
-  final BUTTON_SAVE_TEXT = 'Save';
-  int cartIdSequence = 0;
   StreamController<CartEvent> streamController;
   List<Cart> carts = [];
   SharedPreferences sharedPreferences;
@@ -54,12 +51,9 @@ class _HomeScreenState extends State<HomeScreen> {
       appBar: AppBar(
         title: Text(widget.title),
       ),
-      body: CartViewService.getListView(carts, cartService, streamController),
+      body: CartViewService.getListView(carts, streamController),
       floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          DialogService.createAlertDialog(context, ADD_CART_DIALOG_TEXT, BUTTON_SAVE_TEXT)
-          .then((value) => _saveCart(value, streamController));
-        },
+        onPressed: () => _showAddCartDialog(),
         tooltip: 'Increment',
         child: Icon(Icons.add),
       ), // This trailing comma makes auto-formatting nicer for build methods.
@@ -77,16 +71,19 @@ class _HomeScreenState extends State<HomeScreen> {
     Cart cart = event.cart;
 
     switch(event.type) {
-      case CartEventType.CART_ADDED:
+      case CartEventType.ADDED_CART:
         cartService.saveCart(cart);
         carts.add(event.cart);
         break;
-      case CartEventType.CART_REMOVED:
+      case CartEventType.REMOVED_CART:
         cartService.deleteCart(cart);
         carts.removeWhere((item) => item.getId() == cart.getId());
         break;
-      case CartEventType.CLICK_VIEW_CART_ITEMS:
-      // TODO: Handle this case.
+      case CartEventType.CLICKED_EDIT_NAME:
+        cartService.updateCartName(cart);
+        int index = carts.indexWhere((item) => item.getId() == cart.getId());
+        carts.removeWhere((item) => item.getId() == cart.getId());
+        carts.insert(index, cart);
         break;
       default:
         break;
@@ -94,8 +91,16 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   void _saveCart(String name, StreamController<CartEvent> streamController) {
+    if (name == null) {
+      return;
+    }
     Cart cart = cartService.build(name);
     streamController.add(CartEvent.buildAddedEvent(cart));
+  }
+
+  void _showAddCartDialog() {
+    DialogService.createAlertDialog(context, 'Your Cart Name', 'Save')
+        .then((value) => _saveCart(value, streamController));
   }
 }
 

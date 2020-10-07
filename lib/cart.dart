@@ -38,12 +38,10 @@ class Cart {
   }
 
   Map<String, dynamic> toJson() {
-    final listOfStringItems = this.itemKeys.join(",");
 
     return {
         'id': this.id,
-        'name': this.name,
-        'items': this.itemKeys
+        'name': this.name
       };
   }
 

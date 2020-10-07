@@ -22,15 +22,12 @@ class ItemsScreen extends StatefulWidget {
   _ItemsScreenState createState() => _ItemsScreenState();
 }
 
-
 class _ItemsScreenState extends State<ItemsScreen> {
-  final ADD_ITEM_DIALOG_TEXT = 'Your Item Name';
-  final BUTTON_SAVE_TEXT = 'Save';
-  Cart cart;
   StreamController<ItemEvent> streamController;
-  List<Item> items = [];
   CartService cartService;
   ItemService itemService;
+  List<Item> items = [];
+  Cart cart;
 
   @override
   void initState() {
@@ -46,7 +43,6 @@ class _ItemsScreenState extends State<ItemsScreen> {
       });
     });
 
-
     super.initState();
   }
 
@@ -59,14 +55,11 @@ class _ItemsScreenState extends State<ItemsScreen> {
           icon: Icon(Icons.arrow_back, color: Colors.black),
           onPressed: () => Navigator.pop(context),
         ),
-        title: Text('ANAKA GIGIT 2'),
+        title: Text('Your Cart\'s Items'),
       ),
-      body: ItemViewService.getListView(items, cart, cartService, streamController),
+      body: ItemViewService.getListView(items, cart, streamController),
       floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          DialogService.createAlertDialog(context, ADD_ITEM_DIALOG_TEXT, BUTTON_SAVE_TEXT)
-              .then((value) => _saveCart(value, streamController));
-        },
+        onPressed: () => _showAddItemDialog(),
         tooltip: 'Increment',
         child: Icon(Icons.add),
       ), // This trailing comma makes auto-formatting nicer for build methods.
@@ -85,14 +78,19 @@ class _ItemsScreenState extends State<ItemsScreen> {
 
       case ItemEventType.ADDED_ITEM:
         items.add(item);
-        cartService.saveItemTo(cart, item);
+        cartService.putTheItemToYour(cart, item);
         break;
       case ItemEventType.REMOVED_ITEM:
         items.removeWhere((e) => e.getId() == item.getId());
-        cartService.removeItemFrom(cart, item);
+        cartService.throwAwayTheItemToThePersonNearYou(cart, item);
         break;
       case ItemEventType.CLICKED_EDIT:
-      // TODO: Handle this case.
+
+        Item oldItem = items.firstWhere((e) => e.getId() == item.getId());
+        cartService.updateItemName(cart, item, oldItem);
+        int index = items.indexWhere((e) => e.getId() == item.getId());
+        items.removeWhere((e) => e.getId() == item.getId());
+        items.insert(index, item);
         break;
       default:
         break;
@@ -102,5 +100,10 @@ class _ItemsScreenState extends State<ItemsScreen> {
   void _saveCart(String name, StreamController<ItemEvent> streamController) {
     Item item = itemService.build(name);
     streamController.add(ItemEvent.buildAddedEvent(item));
+  }
+
+  void _showAddItemDialog() {
+    DialogService.createAlertDialog(context, 'Your New Item', 'Save')
+        .then((value) => _saveCart(value, streamController));
   }
 }

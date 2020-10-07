@@ -19,7 +19,7 @@ class ItemEvent {
     return build(item, ItemEventType.ADDED_ITEM);
   }
 
-  static buildClickedEditEvent(Item item) {
+  static buildClickedEditNameEvent(Item item) {
     return build(item, ItemEventType.CLICKED_EDIT);
   }
   
