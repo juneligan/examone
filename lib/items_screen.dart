@@ -98,6 +98,9 @@ class _ItemsScreenState extends State<ItemsScreen> {
   }
 
   void _saveCart(String name, StreamController<ItemEvent> streamController) {
+    if (name == null || name == '') {
+      return;
+    }
     Item item = itemService.build(name);
     streamController.add(ItemEvent.buildAddedEvent(item));
   }
