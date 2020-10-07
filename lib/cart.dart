@@ -1,35 +1,36 @@
-import 'item.dart';
+import 'dart:convert';
+
+import 'item/Item.dart';
 
 class Cart {
   int id;
   String name;
-  List<Item> items;
+  List<String> itemKeys;
 
-  Cart(int id, String name, List<Item> items) {
-    this.id = id;
-    this.name = name;
-    this.items = items;
-  }
+  Cart({this.id, this.name, this.itemKeys});
 
   static build(int id, String name) {
-    return new Cart(id, name, []);
+    return new Cart(id: id, name: name, itemKeys: []);
+  }
+  
+  static empty() {
+    return Cart(id: null, name: null, itemKeys: []);
+  }
+  
+  bool isNull() {
+    return this.id == null && name == null && itemKeys.isEmpty;
+  }
+
+  bool isNotNull() {
+    return !isNull();
+  }
+
+  int getId() {
+    return this.id;
   }
 
   String getName() {
     return this.name;
-  }
-
-  setItems(List<Item> items) {
-    this.items = items;
-  }
-
-  addItem(Item item) {
-    items.add(item);
-  }
-
-  removeItem(Item item) {
-    items = items.where((e) => e.id != item.id);
-    // should save
   }
 
   setName(String name) {
@@ -37,26 +38,21 @@ class Cart {
   }
 
   Map<String, dynamic> toJson() {
-    final listOfStringItems = this.items.map((e) => e.toJson()).join(",");
+    final listOfStringItems = this.itemKeys.join(",");
 
     return {
         'id': this.id,
         'name': this.name,
-        'items': listOfStringItems
+        'items': this.itemKeys
       };
   }
-//  static Cart fromJson(Map<String, dynamic> json) {
-//      : name = json['name'],
-//        age = json['age'],
-//        location = json['location'];
 
   static Cart fromJson(Map<String, dynamic> json) {
-    Cart cart = Cart.build(json['id'], json['name']);
-
+   return Cart.build(json['id'], json['name']);
   }
 
-  getAllItems() {
-    return items;
+  geItemKeys() {
+    return this.itemKeys;
   }
 
 }

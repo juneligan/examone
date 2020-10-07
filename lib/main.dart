@@ -1,124 +1,28 @@
-import 'dart:ffi';
 
 import 'package:examone/cart_service.dart';
-import 'package:examone/locator.dart';
+import 'package:examone/inherited_injection.dart';
+import 'package:examone/user_preferences.dart';
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
-import 'cart.dart';
-import 'globals.dart';
+import 'home_screen.dart';
 
 CartService cartService;
 void main() async {
-
+  WidgetsFlutterBinding.ensureInitialized();
+  await UserPreferences().init();
   runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {
 
-  Widget list;
-
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Basic List View',
-      home: Scaffold(
-        appBar: AppBar(title: Text('Cart List'),),
-        body: getListView(),
-        floatingActionButton: FloatingActionButton(
-        onPressed: () {
-         final counter = cartService.getLatestId();
-          debugPrint(counter);
-        },
-        tooltip: 'Increment',
-        child: Icon(Icons.add),
+    return InheritedInjection(
+      carts: UserPreferences().cartService.getAllCarts(),
+      child: MaterialApp(
+        title: 'Basic List View',
+        home: HomeScreen(title: 'NAKA IGIT',)
       ),
-      )
-    );
-  }
-}
-
-Widget getListView() {
-
-  CartService cartService = CartService();
-  List<Cart> carts = cartService.getAllCarts();
-
-  var listView2  = ListView.builder(
-    itemCount: carts.length,
-    itemBuilder: (context, index) {
-      debugPrint(index.toString());
-      Cart cart = carts[index];
-      return ListTile(
-        leading: Icon(Icons.shopping_cart),
-        title: Text(cart.getName()),
-//        subtitle: Text("Items for the kitchen"),
-        trailing: Icon(Icons.delete)
-      );
-    },
-  );
-  return listView2;
-}
-
-class MyHomePage extends StatefulWidget {
-  MyHomePage({Key key, this.title}) : super(key: key);
-  final String title;
-
-  @override
-  _MyHomePageState createState() => _MyHomePageState();
-}
-
-class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
-
-  void _incrementCounter() {
-    setState(() {
-      _counter++;
-    });
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        // Here we take the value from the MyHomePage object that was created by
-        // the App.build method, and use it to set our appbar title.
-        title: Text(widget.title),
-      ),
-      body: Center(
-        // Center is a layout widget. It takes a single child and positions it
-        // in the middle of the parent.
-        child: Column(
-          // Column is also a layout widget. It takes a list of children and
-          // arranges them vertically. By default, it sizes itself to fit its
-          // children horizontally, and tries to be as tall as its parent.
-          //
-          // Invoke "debug painting" (press "p" in the console, choose the
-          // "Toggle Debug Paint" action from the Flutter Inspector in Android
-          // Studio, or the "Toggle Debug Paint" command in Visual Studio Code)
-          // to see the wireframe for each widget.
-          //
-          // Column has various properties to control how it sizes itself and
-          // how it positions its children. Here we use mainAxisAlignment to
-          // center the children vertically; the main axis here is the vertical
-          // axis because Columns are vertical (the cross axis would be
-          // horizontal).
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            Text(
-              'You have pushed the button this many times:',
-            ),
-            Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.headline4,
-            ),
-          ],
-        ),
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: Icon(Icons.add),
-      ), // This trailing comma makes auto-formatting nicer for build methods.
     );
   }
 }

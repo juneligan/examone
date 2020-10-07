@@ -10,7 +10,7 @@ void main() {
   test('saveCart should actually save the card in the shared preferences', () async {
     final prefs = await SharedPreferences.getInstance();
 
-    final service = CartService();
+    final service = CartService(null, null);
     //given:
 //    Cart cart = Cart.build('cart_1');
 

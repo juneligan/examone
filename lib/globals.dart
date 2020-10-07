@@ -7,6 +7,5 @@ class App {
   static CartService cartService;
   static Future init() async {
     localStorage = await SharedPreferences.getInstance();
-    cartService = new CartService();
   }
 }

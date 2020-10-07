@@ -1,0 +1,3 @@
+enum ItemEventType {
+  ADDED_ITEM, REMOVED_ITEM, CLICKED_EDIT
+}

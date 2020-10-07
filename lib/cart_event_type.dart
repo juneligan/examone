@@ -1,0 +1,3 @@
+enum CartEventType {
+  CART_ADDED, CART_REMOVED, CLICK_VIEW_CART_ITEMS
+}
