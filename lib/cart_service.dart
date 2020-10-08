@@ -113,7 +113,6 @@ class CartService {
 
   List<Cart> getAllCarts() {
     List<String> cartKeys = _getAllPossibleCartKeys();
-    print(cartKeys);
     List<Cart> carts = cartKeys.map((e) =>  _buildFrom(e))
         .where((cart) => cart.isNotNull()).toList();
     return carts;
