@@ -53,4 +53,9 @@ class Cart {
     return this.itemKeys;
   }
 
+  @override
+  toString() {
+    return 'Instance of \'Cart ${this.id}\'';
+  }
+
 }

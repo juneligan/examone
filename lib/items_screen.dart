@@ -97,7 +97,7 @@ class _ItemsScreenState extends State<ItemsScreen> {
     }
   }
 
-  void _saveCart(String name, StreamController<ItemEvent> streamController) {
+  void _saveItem(String name, StreamController<ItemEvent> streamController) {
     if (name == null || name == '') {
       return;
     }
@@ -107,6 +107,6 @@ class _ItemsScreenState extends State<ItemsScreen> {
 
   void _showAddItemDialog() {
     DialogService.createAlertDialog(context, 'Your New Item', 'Save')
-        .then((value) => _saveCart(value, streamController));
+        .then((value) => _saveItem(value, streamController));
   }
 }
