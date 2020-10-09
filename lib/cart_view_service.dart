@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:examone/cart_event.dart';
+import 'package:examone/cart_event_type.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
@@ -11,19 +12,20 @@ import 'items_screen.dart';
 class CartViewService {
   static Widget getListView(
       List<Cart> carts, StreamController<CartEvent> streamController) {
-    var listView2 = ListView.builder(
+    var listView = ListView.builder(
       itemCount: carts.length,
       itemBuilder: (context, index) {
         Cart cart = carts[index];
+        String cartName = cart.getName() ?? ''; // TODO remove since this will not gonna happen
         return ListTile(
           leading: Icon(Icons.shopping_cart),
-          title: Text(cart.getName()),
+          title: Text(cartName),
           trailing: _getTrailingRowButtons(cart, context, streamController),
           onTap: () => _navigateToCartItems(cart, context),
         );
       },
     );
-    return listView2;
+    return listView;
   }
 
   static _navigateToCartItems(Cart cart, BuildContext context) {
@@ -62,7 +64,12 @@ class CartViewService {
   static _showUpdateNameDialog(
       Cart cart, BuildContext context, StreamController streamController) {
     DialogService.createAlertDialog(context, 'Your New Cart Name', 'Update')
-        .then((value) => streamController.add(
-            CartEvent.buildClickedEditName(Cart.build(cart.getId(), value))));
+        .then((value) {
+          if (value != null && value != '') {
+            Cart updatedNameCart = Cart.build(cart.getId(), value);
+            CartEvent event = CartEvent.buildClickedEditName(updatedNameCart);
+            streamController.add(event);
+          }
+        });
   }
 }

@@ -56,6 +56,12 @@ class ItemViewService {
   
   static _showUpdateNameDialog(Item item, BuildContext context, StreamController<ItemEvent> streamController) {
     DialogService.createAlertDialog(context, 'Your New Item Name', 'Update')
-        .then((value) => streamController.add(ItemEvent.buildClickedEditNameEvent(Item.build(item.getId(), value))));
+        .then((value) {
+          if (value != null && value != '') {
+            Item updated = Item.build(item.getId(), value);
+            ItemEvent event = ItemEvent.buildClickedEditNameEvent(updated);
+            streamController.add(event);
+          }
+        });
   }
 }

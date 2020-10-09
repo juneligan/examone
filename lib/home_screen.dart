@@ -90,11 +90,10 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   void _saveCart(String name, StreamController<CartEvent> streamController) {
-    if (name == null || name == '') {
-      return;
+    if (name != null && name != '') {
+      Cart cart = cartService.build(name);
+      streamController.add(CartEvent.buildAddedEvent(cart));
     }
-    Cart cart = cartService.build(name);
-    streamController.add(CartEvent.buildAddedEvent(cart));
   }
 
   void _showAddCartDialog() {

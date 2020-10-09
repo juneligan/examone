@@ -98,11 +98,10 @@ class _ItemsScreenState extends State<ItemsScreen> {
   }
 
   void _saveItem(String name, StreamController<ItemEvent> streamController) {
-    if (name == null || name == '') {
-      return;
+    if (name != null && name != '') {
+      Item item = itemService.build(name);
+      streamController.add(ItemEvent.buildAddedEvent(item));
     }
-    Item item = itemService.build(name);
-    streamController.add(ItemEvent.buildAddedEvent(item));
   }
 
   void _showAddItemDialog() {

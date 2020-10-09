@@ -2,16 +2,18 @@ import 'dart:convert';
 
 import 'package:examone/cart.dart';
 import 'package:examone/cart_service.dart';
+import 'package:examone/item/Item.dart';
 import 'package:examone/item/item_service.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-class MockSharePreferences extends Mock implements SharedPreferences {}
+class MockSharedPreferences extends Mock implements SharedPreferences {}
 class MockItemService extends Mock implements ItemService {}
 
 void main() {
-  final prefs = MockSharePreferences();
+  final prefs = MockSharedPreferences();
   final itemService = MockItemService();
   final service = CartService(prefs, itemService);
 
@@ -160,6 +162,29 @@ void main() {
 
       then:
       verify(prefs.remove('cart_2_items')).called(1);
+    });
+
+    test('putTheItemToYour should put the item to the cart', () async {
+      given:
+      Cart cart = Cart.build(2, 'cart_name_2');
+      Item item = Item.build(10, 'item_10');
+      String itemString = jsonEncode(item.toJson());
+
+      List<String> existingStringItems = [
+                        '{"id":1,"name":"item_1st"}',
+                        '{"id":3,"name":"item_3rd"}',
+                        '{"id":5,"name":"item_5th"}'];
+
+      List<String> expectedStringItems = [...existingStringItems, itemString];
+
+      when(prefs.getStringList('cart_2_items')).thenAnswer((e) => existingStringItems);
+
+
+      when:
+      service.putTheItemToYour(cart, item);
+
+      then:
+      verify(prefs.setStringList('cart_2_items', expectedStringItems)).called(1);
     });
 
 
