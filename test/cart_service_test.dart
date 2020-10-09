@@ -15,6 +15,7 @@ void main() {
   final itemService = MockItemService();
   final service = CartService(prefs, itemService);
 
+
   group('CartServiceSpec', () {
     test('saveCart should save the cart', () async {
       given:
@@ -59,7 +60,7 @@ void main() {
       given:
       int latestCartId = 10;
       List<String>.generate(latestCartId + 1,
-                (num) => (CartService.CART_KEY_PREFIX + num.toString()));
+              (num) => (CartService.CART_KEY_PREFIX + num.toString()));
 
       and:
       when(prefs.getInt(CartService.CART_SEQUENCE_ID_KEY)).thenAnswer((e) => latestCartId);
@@ -86,7 +87,7 @@ void main() {
       given:
       int latestCartId = 0;
       List<String>.generate(latestCartId + 1,
-                (num) => (CartService.CART_KEY_PREFIX + num.toString()));
+              (num) => (CartService.CART_KEY_PREFIX + num.toString()));
 
       and:
       when(prefs.getInt(CartService.CART_SEQUENCE_ID_KEY)).thenAnswer((e) => latestCartId);
@@ -103,7 +104,7 @@ void main() {
       given:
       int latestCartId = 0;
       List<String>.generate(latestCartId + 1,
-                (num) => (CartService.CART_KEY_PREFIX + num.toString()));
+              (num) => (CartService.CART_KEY_PREFIX + num.toString()));
 
       and:
       when(prefs.getString('cart_0')).thenAnswer((e) => null);
@@ -120,7 +121,7 @@ void main() {
       String jsonString2 = jsonEncode(cart2.toJson());
       int latestCartId = 3;
       List<String>.generate(latestCartId + 1,
-                (num) => (CartService.CART_KEY_PREFIX + num.toString()));
+              (num) => (CartService.CART_KEY_PREFIX + num.toString()));
 
       and:
       when(prefs.getInt(CartService.CART_SEQUENCE_ID_KEY)).thenAnswer((e) => latestCartId);
@@ -139,7 +140,29 @@ void main() {
       expect(carts.last.getName(), cart2.getName());
     });
 
-    // TODO delete next
+    test('deleteCart should remove the cart', () async {
+      given:
+      Cart cart = Cart.build(3, 'cart_name_1');
+
+      when:
+      service.deleteCart(cart);
+
+      then:
+      verify(prefs.remove('cart_3')).called(1);
+    });
+
+    test('deleteCart should also remove the items of the cart', () async {
+      given:
+      Cart cart = Cart.build(2, 'cart_name_1');
+
+      when:
+      service.deleteCart(cart);
+
+      then:
+      verify(prefs.remove('cart_2_items')).called(1);
+    });
+
+
     // TODO add cart item related method/functions
   });
 }
