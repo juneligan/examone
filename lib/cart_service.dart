@@ -6,9 +6,9 @@ import 'item/Item.dart';
 import 'item/item_service.dart';
 
 class CartService {
-  final CART_SEQUENCE_ID_KEY = 'cartIdSequence';
-  final CART_KEY_PREFIX = 'cart_';
-  final CART_ITEMS_KEY_POSTFIX = '_items';
+  static final CART_SEQUENCE_ID_KEY = 'cartIdSequence';
+  static final CART_KEY_PREFIX = 'cart_';
+  static final CART_ITEMS_KEY_POSTFIX = '_items';
 
   SharedPreferences _sharedPreferences;
   ItemService _itemService;
@@ -97,16 +97,6 @@ class CartService {
     throwItAllAwayToTheGuard(cart);
   }
 
-  updateCartName(Cart cart) {
-    String cartKey = _buildCartKey(cart);
-    String jsonString = jsonEncode(cart.toJson());
-    _sharedPreferences.setString(cartKey, jsonString);
-  }
-
-  String _buildCartKey(Cart cart) {
-    return CART_KEY_PREFIX + cart.getId().toString();
-  }
-
   saveCart(Cart cart) {
     String jsonString = jsonEncode(cart.toJson());
 
@@ -115,17 +105,27 @@ class CartService {
     _incrementCartSequenceId();
   }
 
+  updateCartName(Cart cart) {
+    String cartKey = _buildCartKey(cart);
+    String jsonString = jsonEncode(cart.toJson());
+    _sharedPreferences.setString(cartKey, jsonString);
+  }
+
   List<Cart> getAllCarts() {
     List<String> cartKeys = _getAllPossibleCartKeys();
-    List<Cart> carts = cartKeys.isNotEmpty ?
-    cartKeys.map((e) =>  _buildFrom(e))
-            .where((cart) => cart.isNotNull()).toList() : [];
+    List<Cart> carts = cartKeys.map((e) =>  _buildFrom(e))
+        .where((cart) => cart.isNotNull()).toList();
     return carts;
+  }
+
+  String _buildCartKey(Cart cart) {
+    return CART_KEY_PREFIX + cart.getId().toString();
   }
   
   List<String> _getAllPossibleCartKeys() {
     int idSequence = _getLatestId();
-    return List<String>.generate(idSequence, (counter) => (CART_KEY_PREFIX + counter.toString()));
+    return List<String>.generate((idSequence + 1),
+            (counter) => (CART_KEY_PREFIX + counter.toString()));
   }
 
   Cart _buildFrom(String key) {

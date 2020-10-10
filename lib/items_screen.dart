@@ -97,16 +97,15 @@ class _ItemsScreenState extends State<ItemsScreen> {
     }
   }
 
-  void _saveCart(String name, StreamController<ItemEvent> streamController) {
-    if (name == null || name == '') {
-      return;
+  void _saveItem(String name, StreamController<ItemEvent> streamController) {
+    if (name != null && name != '') {
+      Item item = itemService.build(name);
+      streamController.add(ItemEvent.buildAddedEvent(item));
     }
-    Item item = itemService.build(name);
-    streamController.add(ItemEvent.buildAddedEvent(item));
   }
 
   void _showAddItemDialog() {
     DialogService.createAlertDialog(context, 'Your New Item', 'Save')
-        .then((value) => _saveCart(value, streamController));
+        .then((value) => _saveItem(value, streamController));
   }
 }
