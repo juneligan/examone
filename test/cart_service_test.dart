@@ -164,6 +164,24 @@ void main() {
       verify(prefs.remove('cart_2_items')).called(1);
     });
 
+    test('putTheItemToYour should increment the item sequence id', () async {
+      given:
+      Cart cart = Cart.build(21, 'cart_name_21');
+      Item item = Item.build(10, 'item_10');
+
+      List<String> existingStringItems = ['{"id":1,"name":"item_1st"}',
+                                          '{"id":3,"name":"item_3rd"}',
+                                          '{"id":5,"name":"item_5th"}'];
+
+      when(prefs.getStringList('cart_21_items')).thenAnswer((e) => existingStringItems);
+
+      when:
+      service.putTheItemToYour(cart, item);
+
+      then:
+      verify(itemService.incrementCartSequenceId()).called(1);
+    });
+
     test('putTheItemToYour should put the item to the cart', () async {
       given:
       Cart cart = Cart.build(2, 'cart_name_2');
@@ -187,7 +205,53 @@ void main() {
       verify(prefs.setStringList('cart_2_items', expectedStringItems)).called(1);
     });
 
+    test('getAllItemsFrom should return list of item objects', () async {
+      given:
+      Cart cart = Cart.build(2, 'cart_name_2');
 
-    // TODO add cart item related method/functions
+      List<String> existingStringItems = [
+                        '{"id":1,"name":"item_1st"}',
+                        '{"id":3,"name":"item_3rd"}',
+                        '{"id":5,"name":"item_5th"}'];
+
+      when(prefs.getStringList('cart_2_items')).thenAnswer((e) => existingStringItems);
+      when(itemService.buildFrom(existingStringItems[0])).thenAnswer((e) => Item.build(1, 'item_1st'));
+      when(itemService.buildFrom(existingStringItems[1])).thenAnswer((e) => Item.build(3, 'item_3rd'));
+      when(itemService.buildFrom(existingStringItems[2])).thenAnswer((e) => Item.build(5, 'item_5th'));
+
+      when:
+      List<Item> items = service.getAllItemsFrom(cart);
+
+      then:
+      expect(items.length, 3);
+      expect(items[0].getId(), 1);
+      expect(items[0].getName(), 'item_1st');
+      expect(items[1].getId(), 3);
+      expect(items[1].getName(), 'item_3rd');
+      expect(items[2].getId(), 5);
+      expect(items[2].getName(), 'item_5th');
+    });
+
+    test('getAllItemsFrom should return empty list if the cart has 0 items in the list', () async {
+      given:
+      Cart cart = Cart.build(2, 'cart_name_2');
+
+      List<String> existingStringItems = [
+                        '{"id":1,"name":"item_1st"}',
+                        '{"id":3,"name":"item_3rd"}',
+                        '{"id":5,"name":"item_5th"}'];
+
+      when(prefs.getStringList('cart_2_items')).thenAnswer((e) => null);
+      when(itemService.buildFrom(existingStringItems[0])).thenAnswer((e) => Item.build(1, 'item_1st'));
+      when(itemService.buildFrom(existingStringItems[1])).thenAnswer((e) => Item.build(3, 'item_3rd'));
+      when(itemService.buildFrom(existingStringItems[2])).thenAnswer((e) => Item.build(5, 'item_5th'));
+
+      when:
+      List<Item> items = service.getAllItemsFrom(cart);
+
+      then:
+      expect(items.length, 0);
+    });
+
   });
 }

@@ -47,10 +47,9 @@ class CartService {
   List<Item> getAllItemsFrom(Cart cart) {
 
     List<String> stringItems = _getAllStringItemsFrom(cart);
-    List<Item> items = stringItems != null
-        ? stringItems
+    List<Item> items = stringItems
         .map((item) => _itemService.buildFrom(item))
-        .toList() : [];
+        .toList();
 
     return items;
   }
